@@ -3,6 +3,7 @@
 ###############################################################################
 # Gregarius - A PHP based RSS aggregator.
 # Copyright (C) 2003 - 2006 Marco Bonetti
+# Copyright © 2011 Jeremy Lavergne
 #
 ###############################################################################
 # This program is free software and open source software; you can redistribute
@@ -23,6 +24,8 @@
 ###############################################################################
 # E-mail:	   mbonetti at gmail dot com
 # Web page:	   http://gregarius.net/
+# E-mail:       jeremy at lavergne dot gotdns dot org
+# Web page:     http://lavergne.gotdns.org/
 #
 ###############################################################################
 
@@ -95,7 +98,7 @@ class RSS {
         We must use SCRIPT_FILENAME instead, because it always exists
         */
         $theme_check = RSS_THEME_DIR."/$theme/$media/$file";
-        if (isset($_SERVER['SCRIPT_FILENAME']) && ereg('admin', $_SERVER['SCRIPT_FILENAME']))   {
+        if (isset($_SERVER['SCRIPT_FILENAME']) && (strpos($_SERVER['SCRIPT_FILENAME'], 'admin') !== false))   {
             $theme_path = substr($_SERVER['SCRIPT_FILENAME'],
                                  0, strpos($_SERVER['SCRIPT_FILENAME'], 'admin'));
             $theme_check = $theme_path.$ret;
