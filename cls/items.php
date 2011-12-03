@@ -2,6 +2,7 @@
 ###############################################################################
 # Gregarius - A PHP based RSS aggregator.
 # Copyright (C) 2003 - 2006 Marco Bonetti
+# Copyright © 2011 Jeremy Lavergne
 #
 ###############################################################################
 # This program is free software and open source software; you can redistribute
@@ -22,6 +23,8 @@
 ###############################################################################
 # E-mail:      mbonetti at gmail dot com
 # Web page:    http://gregarius.net/
+# E-mail:      jeremy at lavergne dot gotdns dot org
+# Web page:    http://lavergne.gotdns.org/
 #
 ###############################################################################
 
@@ -494,7 +497,7 @@ class ItemListNavigation {
 		$this -> pages = array();
 		$base = $_SERVER["REQUEST_URI"];
 		if (!preg_match('#page=[0-9]+$#',$base)) {
-			$base .= (ereg('\?',$base)?"&amp;":"?"). "page=0";
+			$base .= ((strpos($base,'?') !== false)?"&amp;":"?"). "page=0";
 		}
 		$last = ceil( $this -> _parent -> numItems / $this -> _parent -> itemsPerPage);
 		$lastin = 0;
