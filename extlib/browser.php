@@ -88,17 +88,17 @@ class browser {
         $this->UserAgent = $agent;
 
         // find operating system
-        if (eregi("win", $agent))
+        if (stripos($agent, 'win') !== false)
             $bd['platform'] = "Windows";
-        elseif (eregi("mac", $agent)) $bd['platform'] = "MacIntosh";
-        elseif (eregi("linux", $agent)) $bd['platform'] = "Linux";
-        elseif (eregi("OS/2", $agent)) $bd['platform'] = "OS/2";
-        elseif (eregi("BeOS", $agent)) $bd['platform'] = "BeOS";
+        elseif (stripos($agent, 'mac') !== false) $bd['platform'] = "MacIntosh";
+        elseif (stripos($agent, 'linux') !== false) $bd['platform'] = "Linux";
+        elseif (stripos($agent, 'OS/2') !== false) $bd['platform'] = "OS/2";
+        elseif (stripos($agent, 'BeOS') !== false) $bd['platform'] = "BeOS";
 
         // test for Opera
-        if (eregi("opera", $agent)) {
+        if (stripos($agent, 'opera') !== false) {
             $val = stristr($agent, "opera");
-            if (eregi("/", $val)) {
+            if (stripos($val, '/') !== false) {
                 $val = explode("/", $val);
                 $bd['browser'] = $val[0];
                 $val = explode(" ", $val[1]);
@@ -113,14 +113,14 @@ class browser {
 
             // test for WebTV
         }
-        elseif (eregi("webtv", $agent)) {
+        elseif (stripos($agent, 'webtv') !== false) {
             $val = explode("/", stristr($agent, "webtv"));
             $bd['browser'] = $val[0];
             $bd['version'] = $val[1];
 
             // test for MS Internet Explorer version 1
         }
-        elseif (eregi("microsoft internet explorer", $agent)) {
+        elseif (stripos($agent, 'microsoft internet explorer') !== false) {
             $bd['browser'] = "MSIE";
             $bd['version'] = "1.0";
             $var = stristr($agent, "/");
@@ -131,7 +131,7 @@ class browser {
 
             // test for NetPositive
         }
-        elseif (eregi("NetPositive", $agent)) {
+        elseif (stripos($agent, 'NetPositive') !== false) {
             $val = explode("/", stristr($agent, "NetPositive"));
             $bd['platform'] = "BeOS";
             $bd['browser'] = $val[0];
@@ -139,7 +139,7 @@ class browser {
 
             // test for MS Internet Explorer
         }
-        elseif (eregi("msie", $agent) && !eregi("opera", $agent)) {
+        elseif ((stripos($agent, 'msie') !== false) && (stripos($agent, 'opera') === false)) {
             $val = explode(" ", stristr($agent, "msie"));
             $bd['browser'] = $val[0];
             $bd['version'] = $val[1];
@@ -148,11 +148,11 @@ class browser {
 
             // test for MS Pocket Internet Explorer
         }
-        elseif (eregi("mspie", $agent) || eregi('pocket', $agent)) {
+        elseif ((stripos($agent, 'mspie') !== false) || (stripos($agent, 'pocket') !== false)) {
             $val = explode(" ", stristr($agent, "mspie"));
             $bd['browser'] = "MSPIE";
             $bd['platform'] = "WindowsCE";
-            if (eregi("mspie", $agent))
+            if (stripos($agent, 'mspie') !== false)
                 $bd['version'] = $val[1];
             else {
                 $val = explode("/", $agent);
@@ -161,7 +161,7 @@ class browser {
 
             // test for Galeon
         }
-        elseif (eregi("galeon", $agent)) {
+        elseif (stripos($agent, "galeon") !== false) {
             $val = explode(" ", stristr($agent, "galeon"));
             $val = explode("/", $val[0]);
             $bd['browser'] = $val[0];
@@ -171,7 +171,7 @@ class browser {
 
             // test for Konqueror
         }
-        elseif (eregi("Konqueror", $agent)) {
+        elseif (stripos($agent, "Konqueror") !== false) {
             $val = explode(" ", stristr($agent, "Konqueror"));
             $val = explode("/", $val[0]);
             $bd['browser'] = $val[0];
@@ -181,21 +181,21 @@ class browser {
 
             // test for iCab
         }
-        elseif (eregi("icab", $agent)) {
+        elseif (stripos($agent, "icab") !== false) {
             $val = explode(" ", stristr($agent, "icab"));
             $bd['browser'] = $val[0];
             $bd['version'] = $val[1];
 
             // test for OmniWeb
         }
-        elseif (eregi("omniweb", $agent)) {
+        elseif (stripos($agent, "omniweb") !== false) {
             $val = explode("/", stristr($agent, "omniweb"));
             $bd['browser'] = $val[0];
             $bd['version'] = $val[1];
 
             // test for Phoenix
         }
-        elseif (eregi("Phoenix", $agent)) {
+        elseif (stripos($agent, "Phoenix") !== false) {
             $bd['browser'] = "Phoenix";
             $val = explode("/", stristr($agent, "Phoenix/"));
             $bd['version'] = $val[1];
@@ -204,7 +204,7 @@ class browser {
 
             // test for Firebird
         }
-        elseif (eregi("firebird", $agent)) {
+        elseif (stripos($agent, "firebird") !== false) {
             $bd['browser'] = "Firebird";
             $val = stristr($agent, "Firebird");
             $val = explode("/", $val);
@@ -213,7 +213,7 @@ class browser {
 
             // test for Firefox
         }
-        elseif (eregi("Firefox", $agent)) {
+        elseif (stripos($agent, "Firefox") !== false) {
             $bd['browser'] = "Firefox";
             $val = stristr($agent, "Firefox");
             $val = explode("/", $val);
@@ -222,26 +222,26 @@ class browser {
 
             // test for Mozilla Alpha/Beta Versions
         }
-        elseif (eregi("mozilla", $agent) && eregi("rv:[0-9].[0-9][a-b]", $agent) && !eregi("netscape", $agent)) {
+        elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9].[0-9][a-b]") !== false) && (stripos($agent, "netscape") === false)) {
             $bd['browser'] = "Mozilla";
             $val = explode(" ", stristr($agent, "rv:"));
-            eregi("rv:[0-9].[0-9][a-b]", $agent, $val);
+            preg_match("/rv:[0-9].[0-9][a-b]/", $agent, $val);
             $bd['version'] = str_replace("rv:", "", $val[0]);
             $this->isMoz = true;
 
             // test for Mozilla Stable Versions
         }
-        elseif (eregi("mozilla", $agent) && eregi("rv:[0-9]\.[0-9]", $agent) && !eregi("netscape", $agent)) {
+        elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9]\.[0-9]") !== false) && (stripos($agent, "netscape") === false)) {
             $bd['browser'] = "Mozilla";
             $val = explode(" ", stristr($agent, "rv:"));
-            eregi("rv:[0-9]\.[0-9]\.[0-9]", $agent, $val);
+            preg_match("/rv:[0-9]\.[0-9]\.[0-9]/", $agent, $val);
             $bd['version'] = str_replace("rv:", "", $val[0]);
             $this->isMoz = true;
 
             // test for Lynx & Amaya
         }
-        elseif (eregi("libwww", $agent)) {
-            if (eregi("amaya", $agent)) {
+        elseif (stripos($agent, "libwww") !== false) {
+            if (stripos($agent, "amaya") !== false) {
                 $val = explode("/", stristr($agent, "amaya"));
                 $bd['browser'] = "Amaya";
                 $val = explode(" ", $val[1]);
@@ -254,7 +254,7 @@ class browser {
 
             // test for Safari
         }
-        elseif (eregi("AppleWebKit", $agent)) {
+        elseif (stripos($agent, "AppleWebKit") !== false) {
             $bd['browser'] = "Safari";
             $val = explode("/", $agent);
             $bd['version'] = $val[3];
@@ -262,7 +262,7 @@ class browser {
 
             // remaining two tests are for Netscape
         }
-        elseif (eregi("netscape", $agent)) {
+        elseif (stripos($agent, "netscape") !== false) {
             $val = explode(" ", stristr($agent, "netscape"));
             $val = explode("/", $val[0]);
             $bd['browser'] = $val[0];
@@ -272,7 +272,7 @@ class browser {
                 $this->isMoz = true;
             }
         }
-        elseif (eregi("mozilla", $agent) && !eregi("rv:[0-9]\.[0-9]\.[0-9]", $agent)) {
+        elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9]\.[0-9]\.[0-9]") === false)) {
             $val = explode(" ", stristr($agent, "mozilla"));
             $val = explode("/", $val[0]);
             $bd['browser'] = "Netscape";
@@ -289,7 +289,7 @@ class browser {
         $bd['version'] = ereg_replace("[^0-9,.,a-z,A-Z]", "", $bd['version']);
 
         // check for AOL
-        if (eregi("AOL", $agent)) {
+        if (stripos($agent, "AOL") !== false) {
             $var = stristr($agent, "AOL");
             $var = explode(" ", $var);
             $bd['aol'] = ereg_replace("[^0-9,.,a-z,A-Z]", "", $var[1]);
