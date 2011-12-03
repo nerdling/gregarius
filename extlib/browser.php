@@ -2,11 +2,11 @@
 /*****************************************************************
  * File name: browser.php
  * Author: Gary White & Damien Raude-Morvan
- * Last modified: December 10, 2006
  *
  **************************************************************
  * Copyright (C) 2003  Gary White
  * Copyright (C) 2006  Damien Raude-Morvan <drazzib@drazzib.com>
+ * Copyright © 2011 Jeremy Lavergne
  *
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -18,6 +18,9 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details at:
  http://www.gnu.org/copyleft/gpl.html
+ *
+ * E-mail:      jeremy at lavergne dot gotdns dot org
+ * Web page:    http://lavergne.gotdns.org/
  */
 
 /**
