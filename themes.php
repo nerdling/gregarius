@@ -2,6 +2,7 @@
 ###############################################################################
 # Gregarius - A PHP based RSS aggregator.
 # Copyright (C) 2003 - 2006 Marco Bonetti
+# Copyright © 2011 Jeremy Lavergne
 #
 ###############################################################################
 # This program is free software and open source software; you can redistribute
@@ -22,6 +23,8 @@
 ###############################################################################
 # E-mail:      mbonetti at gmail dot com
 # Web page:    http://gregarius.net/
+# E-mail:      jeremy at lavergne dot gotdns dot org
+# Web page:    http://lavergne.gotdns.org
 #
 ###############################################################################
 
@@ -179,7 +182,7 @@ function isMobileDevice() {
 
 
             // if none of those matched, let's have a gander at grabbing the resolution...
-            if (!$ret && eregi( "([0-9]{3})x([0-9]{3})", $ua, $matches ) ) {
+            if (!$ret && preg_match( "/([0-9]{3})x([0-9]{3})/i", $ua, $matches ) ) {
                 if ($matches[1]<600 || $matches[2]<600) {
                     $ret = true; //one of the screen dimensions is less than 600 - we'll call it a mobile device
                 }
