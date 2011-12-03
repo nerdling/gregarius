@@ -284,15 +284,15 @@ class browser {
         }
 
         // clean up extraneous garbage that may be in the name
-        $bd['browser'] = ereg_replace("[^a-z,A-Z]", "", $bd['browser']);
+        $bd['browser'] = preg_replace("/[^a-z,A-Z]/", "", $bd['browser']);
         // clean up extraneous garbage that may be in the version
-        $bd['version'] = ereg_replace("[^0-9,.,a-z,A-Z]", "", $bd['version']);
+        $bd['version'] = preg_replace("/[^0-9,.,a-z,A-Z]/", "", $bd['version']);
 
         // check for AOL
         if (stripos($agent, "AOL") !== false) {
             $var = stristr($agent, "AOL");
             $var = explode(" ", $var);
-            $bd['aol'] = ereg_replace("[^0-9,.,a-z,A-Z]", "", $var[1]);
+            $bd['aol'] = preg_replace("/[^0-9,.,a-z,A-Z]/", "", $var[1]);
         } else {
             $bd['aol'] = false;
         }
