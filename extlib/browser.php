@@ -231,7 +231,7 @@ class browser {
 
             // test for Mozilla Stable Versions
         }
-        elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9]\.[0-9]") !== false) && (stripos($agent, "netscape") === false)) {
+        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]/", $agent) && (stripos($agent, "netscape") === false)) {
             $bd['browser'] = "Mozilla";
             $val = explode(" ", stristr($agent, "rv:"));
             preg_match("/rv:[0-9]\.[0-9]\.[0-9]/", $agent, $val);
