@@ -2,6 +2,7 @@
 /*
    Copyright (c) 2003 Danilo Segan <danilo@kvota.net>.
    Copyright (c) 2005 Nico Kaiser <nico@siriux.net>
+   Copyright © 2011 Jeremy Lavergne
    
    This file is part of PHP-gettext.
 
@@ -19,6 +20,8 @@
    along with PHP-gettext; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+   E-mail:      jeremy at lavergne dot gotdns dot org
+   Web page:    http://lavergne.gotdns.org/
 */
  
 /**
