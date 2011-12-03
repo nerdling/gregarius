@@ -138,7 +138,7 @@ function rss_item_date() {
 				$i++;
 				$key="#{$i}";
 				$value=rss_locale_date($new_fmt, $GLOBALS['rss']->currentItem->date, false);
-				if (eregi("en",getConfig('rss.output.lang'))) {
+				if (stripos(getConfig('rss.output.lang'), "en") !== false) {
 					//we add the english suffixe only for english language
 					$value.=rss_date('S',$GLOBALS['rss']->currentItem->date, false);
 				}
