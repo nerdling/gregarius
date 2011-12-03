@@ -980,7 +980,7 @@ http://www.php.net/manual/en/function.getallheaders.php
 function rss_getallheaders() {
     $headers = array();
     foreach($_SERVER as $h=>$v) {
-        if(ereg('HTTP_(.+)',$h,$hp)) {
+        if(preg_match('/HTTP_(.+)/',$h,$hp)) {
             $headers[$hp[1]]=$v;
         }
     }
