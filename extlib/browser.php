@@ -124,7 +124,7 @@ class browser {
             $bd['browser'] = "MSIE";
             $bd['version'] = "1.0";
             $var = stristr($agent, "/");
-            if (ereg("308|425|426|474|0b1", $var)) {
+            if (preg_match("/308|425|426|474|0b1/", $var)) {
                 $bd['version'] = "1.5";
             }
             $this -> isIE = true;
