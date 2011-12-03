@@ -2,6 +2,7 @@
 ###############################################################################
 # Gregarius - A PHP based RSS aggregator.
 # Copyright (C) 2003 - 2006 Marco Bonetti
+# Copyright © 2011 Jeremy Lavergne
 #
 ###############################################################################
 # This program is free software and open source software; you can redistribute
@@ -22,6 +23,8 @@
 ###############################################################################
 # E-mail:      mbonetti at gmail dot com
 # Web page:    http://gregarius.net/
+# E-mail:      jeremy at lavergne dot gotdns dot org
+# Web page:    http://lavergne.gotdns.org/
 #
 ###############################################################################
 
@@ -190,7 +193,7 @@ function theme_options() {
 function theme_options_fill_override_array($theme, $media, $array_input, $key=null) {
     $ret = array();
     if( !is_array( $array_input ) ) {
-        $array_input = split( ",", $array_input );
+        $array_input = explode( ",", $array_input );
     }
     
     foreach( $array_input as $inp ) {
