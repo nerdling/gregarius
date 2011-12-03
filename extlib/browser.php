@@ -272,7 +272,7 @@ class browser {
                 $this->isMoz = true;
             }
         }
-        elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9]\.[0-9]\.[0-9]") === false)) {
+        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]\.[0-9]", $agent)) {
             $val = explode(" ", stristr($agent, "mozilla"));
             $val = explode("/", $val[0]);
             $bd['browser'] = "Netscape";
