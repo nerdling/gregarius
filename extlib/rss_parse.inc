@@ -18,6 +18,10 @@
 * @version          0.8
 * @license          GPL
 *
+* Modifications:
+* Copyright © 2011 Jeremy Lavergne
+* E-mail:       jeremy at lavergne dot gotdns dot org
+* Web page:     http://lavergne.gotdns.org/
 */
 
 define('RSS', 'RSS');
@@ -169,7 +173,7 @@ class MagpieRSS {
         if ( empty($this->incontent) ) {   
                 $ns = false;
                 if ( strpos( $element, ':' ) ) {
-                   list($ns, $el) = split( ':', $element, 2); 
+                   list($ns, $el) = preg_split( '/:/', $element, 2); 
                 }
                 if ( $ns and $ns != 'rdf' ) {
                    $this->current_namespace = $ns;
