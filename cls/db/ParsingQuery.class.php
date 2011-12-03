@@ -4,7 +4,7 @@
 *
 * @package SQLiteManager
 * @author Frédéric HENNINOT
-* @version $Id: ParsingQuery.class.php,v 1.37 2005/06/05 17:58:36 freddy78 Exp $ $Revision: 1.37 $
+* @version $Id: ParsingQuery.class.php,v 1.41 2006/04/16 12:23:37 freddy78 Exp $ $Revision: 1.41 $
 */
 
 class ParsingQuery {
@@ -55,7 +55,7 @@ class ParsingQuery {
 	* @param string $query Query string command
 	* @param int $type type export selector
 	*/
-	function ParsingQuery($query, $type){
+	function __construct($query, $type){
 		$this->query = $query;
 		$this->type = $type;
 	}
@@ -66,35 +66,30 @@ class ParsingQuery {
 	* @access public
 	*/
 	function tabletoSQLite($query){
-		$query = eregi_replace('auto_increment=(.*)[[:space:]];', ';', $query);
-		$query = eregi_replace('[[:space:]]UNSIGNED[[:space:]]', ' ', $query);
-		$query = eregi_replace('TYPE=(.*)[[:space:]];', ';', $query);
+		$query = preg_replace('#auto_increment=(.*)[[:space:]];#i', ';', $query);
+		$query = preg_replace('#[[:space:]]UNSIGNED[[:space:]]#i', ' ', $query);
+		$query = preg_replace('#TYPE=(.*)[[:space:]];#i', ';', $query);
 		$query = str_replace("\n", ' ', $query);
 		$startPar = strpos($query, '(');
 		$endPar = strrpos($query, ')');
 		preg_match('/TABLE[[:space:]](.*)[[:space:]]\(/i', substr($query, 0, ($startPar+1)), $result);
-		$tableName = ereg_replace('\[|\]','',$result[1]);
+		$tableName = preg_replace('#\[|\]#','',$result[1]);
 		$tableElement = explode(',', substr($query, $startPar+1, ($endPar - $startPar)-1));
 		$numElement = 0;
 		$primaryExist = false;
 		while(list($key, $value)=each($tableElement)){
-
-			$value=preg_replace("/(\(\s+)/is","(",$value);
-			$value=preg_replace("/(\s+\))/is",")",$value);
-
 			$numElement++;
-			if(eregi('not[[:space:]]null', $value)) {
+			if(preg_match('#not[[:space:]]null#i', $value)) {
 				$matches = 'not[[:space:]]null';
 				$defineElement[$numElement]['null'] = false;
 			}
-			if($matches) $value = eregi_replace($matches, '', $value);
-			if(!eregi('[[:space:]]key[[:space:]]', $value)){
+			if($matches) $value = preg_replace("#$matches#i", '', $value);
+			if(!preg_match('#[[:space:]]key[[:space:]]#i', $value)){
 				$value = $this->bracketsReplaceSpaces($value,'@¤&');
 				$tabValue = explode(' ', trim($value));
-
 				$tabValue[0] = str_replace('@¤&',' ',$tabValue[0]);
 				$defineElement[$numElement]['name'] = trim($tabValue[0]);
-				if(eregi('auto_increment', trim($value))){
+				if(preg_match('#auto_increment#i', trim($value))){
 					$defineElement[$numElement]['type'] = 'INTEGER';
 					$defineElement[$numElement]['sup'] = 'PRIMARY KEY';
 					$primaryExist = true;
@@ -102,28 +97,25 @@ class ParsingQuery {
 				}
 				$defineElement[$numElement]['type'] = str_replace(' int(', ' INTEGER(', $tabValue[1]);
 				for($i = 2 ; $i<count($tabValue) ; $i++) {
-					if (eregi('zerofill[ ]?',$tabValue[$i])) {
-						$tabValue[$i] = eregi_replace('zerofill[ ]?','',$tabValue[$i]);
+					if (preg_match('#zerofill[ ]?#i',$tabValue[$i])) {
+						$tabValue[$i] = preg_replace('#zerofill[ ]?#i','',$tabValue[$i]);
 						//$defineElement[$numElement]['type'] .= ' zerofill';
 					}
 					if(!isset($defineElement[$numElement]['sup'])) $defineElement[$numElement]['sup']='';
 					$defineElement[$numElement]['sup'] .= $tabValue[$i].' ';
 				}
-				if(eregi('set|enum', $tabValue[1])) {
-					if(!ereg('\)', $tabValue[1])){
-						if ($defineElement[$numElement]['sup']) {
-							$tabValue[1].=$defineElement[$numElement]['sup'];
-							unset($defineElement[$numElement]['sup']);
-						}
-						# FIX wrong enum parsing
-						$nb_items=count($tableElement);
-						for($i=($key+1) ; $i<= ($nb_items+1) ; $i++) {
+
+				//if(eregi('set|enum', $tabValue[1])){
+				if(preg_match('#set|enum#i', $tabValue[1])){
+					//if(!ereg('\)', $tabValue[1])){
+					if(!preg_match('#\)#i', $tabValue[1])){
+						for($i=($key+1) ; $i<= (count($tableElement)+1) ; $i++) {
 							$tabValue[1] .= ','.$tableElement[$i];
 							unset($tableElement[$i]);
-							if(ereg('\)', $tabValue[1])) break;
+							//if(ereg('\)', $tabValue[1])) break;
+							if(preg_match('#\)#', $tabValue[1])) break;
 						}
 					}
-
 					preg_match('/\((.*)\)/i', $tabValue[1], $enumRes);
 					$tabPropEnum = explode(',', $enumRes[1]);
 					$maxlen = 0;
@@ -132,26 +124,21 @@ class ParsingQuery {
 
 					preg_match('/\)(.*)/', $tabValue[1], $supRes);
 					$defineElement[$numElement]['type'] .= $supRes[1];
-					if ($tabPropEnum[0]) {
-						$tabPropEnum[0]=preg_replace("/^'/is","",trim($tabPropEnum[0]));
-						$tabPropEnum[0]=preg_replace("/'$/is","",trim($tabPropEnum[0]));
-						$defineElement[$numElement]['sup'] = 'DEFAULT '.$tabPropEnum[0];
-					}
-					else unset($defineElement[$numElement]['sup']);
 				}
 			} else {
-				if(!ereg('\)', $value)){
+				//if(!ereg('\)', $value)){
+				if(!preg_match('#\)#', $value)){
 					for($i=($key+1) ; $i<= (count($tableElement)+1) ; $i++) {
 						$value .= ','.$tableElement[$i];
 						unset($tableElement[$i]);
-						if(ereg('\)', $value)) break;
+						if(preg_match('#\)#', $value)) break;
 					}
 				}
 				if(isset($tabIndex)) $numIndex = count($tabIndex)+1;
 				else $numIndex = 1;
-				preg_match('/key(.*)\(/i', $value, $indexSearch);
-				$indexName = ereg_replace('\[|\]','',trim($indexSearch[1]));
-				if(eregi('PRIMARY', $value) && !$primaryExist) {
+				preg_match('#key(.*)\(#i', $value, $indexSearch);
+				$indexName = preg_replace('#\[|\]#','',trim($indexSearch[1]));
+				if(preg_match('#PRIMARY#i', $value) && !$primaryExist) {
 					$listChamp = $this->recupFields($value);
 					if(is_array($listChamp)) {
 						$tabIndex[$numIndex]['type'] = 'UNIQUE';
@@ -163,8 +150,8 @@ class ParsingQuery {
 							if($value['name']==$listChamp) $defineElement[$key]['sup'] .=' PRIMARY KEY';
 						}
 					}
-				} elseif(!eregi('PRIMARY', $value)) {
-					if(eregi('UNIQUE', $value)) $tabIndex[$numIndex]['type'] = 'UNIQUE';
+				} elseif(!preg_match('#PRIMARY#i', $value)) {
+					if(preg_match('#UNIQUE#i', $value)) $tabIndex[$numIndex]['type'] = 'UNIQUE';
 					$listChamp = $this->recupFields($value);
 					$tabIndex[$numIndex]['champ'] = $listChamp;
 					$tabIndex[$numIndex]['name'] = $indexName;
@@ -251,53 +238,67 @@ class ParsingQuery {
 	function convertQuery(){
 		$localQuery = $this->query;
 		$localQuery = str_replace("\r\n", "\n", $localQuery);
-		$localQuery = ereg_replace("/;?\n/", ";\n", $localQuery);
+		$localQuery = preg_replace("#/;?\n/#", ";\n", $localQuery);
 		if($this->type == 2){
 			$localQuery = str_replace("\\'", "''", $localQuery);
 			$localQuery = preg_replace("/^use.*\n/i", '', $localQuery);
 			$localQuery = $this->convertBrackets($localQuery);
 		}
+
 		$localQuery = $this->purgeComment($localQuery);
 		if(strpos($localQuery, ";\n")){
 			$tabQuery = explode(";\n", $localQuery);
 			$tabOut = array();
 			$startTrigger = false;
+			$tempQueryString = '';
 			while(list($key, $req) = each($tabQuery)) {
-				if(substr($req, -1)!=';') $req .= ';';
 				if(empty($req)) continue;
+				if(!$startTrigger && preg_match('#^'.implode('|', $GLOBALS['elementStartQuery']).'#i', $req)) {
+					// starting new query
+					if(!empty($tempQueryString)) {
+						if(substr($tempQueryString, -1)!=';') $tempQueryString .= ';';
+							$tabOut[] = $tempQueryString;
+							$tempQueryString = '';
+					}
+				}
 				if($this->type == 1){
-					if(eregi('begin[[:space:]]transaction', $req)) continue;
-					if(eregi('commit|transaction', $req)) continue;
-					if(eregi('create[[:space:]]trigger', $req)) {
+					if(preg_match('#begin[[:space:]]transaction#i', $req)) continue;
+					if(preg_match('#commit|transaction#i', $req)) continue;
+					if(preg_match('#create[[:space:]]trigger#i', $req)) {
 						$startTrigger = true;
 						$queryTrigger = '';
 					}
 					if(!$startTrigger) {
-						$tabOut[] = $req;
+						$tempQueryString .= $req;
 					} else {
-						$queryTrigger .= ' '.$req.'; ';
-						if(eregi('end;', $req)) {
+						$queryTrigger .= ' '.$req;
+						if(substr($req, -1)!=';') $queryTrigger .= ';';
+						if(preg_match('#end$#i', trim($req))) {
 							$startTrigger = false;
 							$tabOut[] = str_replace("\n", ' ', $queryTrigger);
 						}
 					}
 				} elseif($this->type == 2) {
 					$req = str_replace("\\r\\n", "\n", $req);
-					if(ereg('^--', $req)) continue;
-					if(eregi('[[:space:]]IF EXISTS[[:space:]]', $req)) continue;
-					if(eregi('create[[:space:]]table', $req)) {
+					if(preg_match('#^--#', $req)) continue;
+					if(preg_match('#[[:space:]]IF EXISTS[[:space:]]#i', $req)) continue;
+					if(preg_match('#create[[:space:]]table#i', $req)) {
 						$tabTable = $this->tabletoSQLite(str_replace("\n", ' ', $req));
 						$tabOut = array_merge($tabOut, $tabTable);
+						$tempQueryString = '';
 					} else {
-						$tabOut[] = $req;
+						$tempQueryString .= $req;
 					}
 				}
 			}
-			//print_r($tabOut);
+			if(!empty($tempQueryString)) {
+				if(substr($tempQueryString, -1)!=';') $tempQueryString .= ';';
+				$tabOut[] = $tempQueryString;
+			}
 			return $tabOut;
 		} else {
 			if($this->type==2){
-				if(eregi('CREATE[[:space:]]TABLE', $localQuery)) $localQuery = $this->tabletoSQLite($localQuery);
+				if(preg_match('#CREATE[[:space:]]TABLE#i', $localQuery)) $localQuery = $this->tabletoSQLite($localQuery);
 				$localQuery = str_replace("\\r\\n", "\n", $localQuery);
 			}
 			return $localQuery;
@@ -311,7 +312,7 @@ class ParsingQuery {
 	* @param string $string is the string into SELECT and FROM
 	*/
 	function recupFields($string){
-		$string = ereg_replace('\[|\]','',$string);
+		$string = preg_replace('#\[|\]#','',$string);
 		preg_match('/\((.*)\)/', $string, $parChamp);
 		if(strpos($parChamp[1], ',')) $listChamp = explode(',', $parChamp[1]);
 		else $listChamp = trim($parChamp[1]);
@@ -330,11 +331,11 @@ class ParsingQuery {
 		$outQ = array();
 		if(is_array($tabQ)){
 			foreach($tabQ as $lineQ){
-				if(eregi('\/\*', $lineQ)) $commentBlock = true;
+				if(preg_match('#\/\*#', $lineQ)) $commentBlock = true;
 				if( !$commentBlock && (substr(trim($lineQ), 0, 1)!= '#') && (substr(trim($lineQ), 0, 2)!= '--') && !empty($lineQ)) {
 					$outQ[] = $lineQ;
 				}
-				if(eregi('\*\/', $lineQ)) $commentBlock = false;
+				if(preg_match('#\*\/#', $lineQ)) $commentBlock = false;
 			}
 			$query = implode("\n", $outQ);
 		}
@@ -348,12 +349,12 @@ class ParsingQuery {
 	* @param string $query query
 	*/
 	function noLimit($query){
-		if(eregi('LIMIT[[:space:]]', $query)){
+		if(preg_match('#LIMIT[[:space:]]#i', $query)){
 			preg_match('/LIMIT(.*),/i', $query, $limitRes);
 			if(isset($limitRes[1])) {
 				$startRecLimit = (int)(trim($limitRes[1]));
 				$out['page'] = ($startRecLimit / BROWSE_NB_RECORD_PAGE) +1;
-				$out['query'] = eregi_replace('LIMIT.*', '', $query);
+				$out['query'] = preg_replace('#LIMIT.*#i', '', $query);
 			}
 		} else {
 			$out['query'] = $query;
@@ -370,7 +371,7 @@ class ParsingQuery {
 	*/
 	function explodeQuery($query=''){
 		if($query == '') $query = $this->query;
-		$query = $this->formattedQuery = ereg_replace("''", '#%£Q£%#', $query);
+		$query = $this->formattedQuery = preg_replace("#''#", '%£Q£%', $query);
 		$tabQuote = strpos_all($query, "'");
 		$inString = false;
 		$this->tabString = array();
@@ -384,17 +385,17 @@ class ParsingQuery {
 				} else {
 					$end = $posQuote;
 					$subQuery = substr($query, $start, ($end-$start)+1);
-					$this->tabString[$stringNumber] = ereg_replace('#%£Q£%#', "''",  $subQuery);
-					$this->formattedQuery = str_replace($subQuery, '#%£'.$stringNumber.'£%#', $this->formattedQuery);
+					$this->tabString[$stringNumber] = preg_replace('#%£Q£%#', "''",  $subQuery);
+					$this->formattedQuery = str_replace($subQuery, '%£'.$stringNumber.'£%', $this->formattedQuery);
 					$inString = false;
 				}
 			}
 		}
 		$this->formattedQuery = str_replace("\t", '', $this->formattedQuery);
-		$tabExplodedQuery = split('[[:space:]]+', $this->formattedQuery);
+		$tabExplodedQuery = preg_split('#[[:space:]]+#', $this->formattedQuery);
 		$tabOut = array();
 		foreach($tabExplodedQuery as $once){
-			if(eregi('['.preg_quote($GLOBALS['SQLpunct']).']', $once)){
+			if(preg_match('#['.preg_quote($GLOBALS['SQLpunct']).']#', $once)){
 				$once = preg_replace('/['.preg_quote($GLOBALS['SQLpunct']).']/', ' $0 ', $once);
 				$tempTab = explode(" ",$once);
 				$tabOut = array_merge($tabOut, $tempTab);
@@ -414,10 +415,10 @@ class ParsingQuery {
 	function colorWordList(){
 		$indent = $braketLevel = 0;
 		foreach($this->explodedQuery as $key=>$value){
-			if(($value == '') || (ereg('#%£(.*)£%#', $value))) continue;
+			if(($value == '') || (preg_match('#%£(.*)£%#', $value))) continue;
 			$currentWord = strtoupper(trim($value));
 			$tabWord = array_merge($GLOBALS['SQLKeyWordList'], $GLOBALS['SQLoperator']);
-			if(eregi("[".preg_quote($GLOBALS['SQLpunct']).']', $currentWord)){
+			if(preg_match('#['.preg_quote($GLOBALS['SQLpunct']).']#i', $currentWord)){
 				$value = $this->explodedQuery[$key] = preg_replace('/['.preg_quote($GLOBALS['SQLpunct']).']/', "<span class=\"syntaxe_punct\">$0</span>", $value);
 			}
 			if(in_array($currentWord, $tabWord)){
@@ -426,16 +427,16 @@ class ParsingQuery {
 				$this->explodedQuery[$key] = $this->colorizeWord($value, $currentWord, 'syntaxe_function');
 			} elseif(($currentWord != '0') && in_array($currentWord, $GLOBALS['SQLiteType'])){
 				$this->explodedQuery[$key] = $this->colorizeWord($value, $currentWord, 'syntaxe_type');
-			} elseif(ereg('[0-9]+', trim($value))){
+			} elseif(preg_match('#[0-9]+#', trim($value))){
 				$this->explodedQuery[$key] = $this->colorizeWord($value, trim($value), 'syntaxe_digit');
-			} elseif(eregi('[0-9a-z]+', trim($value))){
+			} elseif(preg_match('#[0-9a-z]+#i', trim($value))){
 				$this->explodedQuery[$key] = $this->colorizeWord($value, trim($value), 'syntaxe_variable');
 			} else {
 				$this->explodedQuery[$key] = $this->colorizeWord($value, trim($value), 'syntaxe_variable');
 			}
 			$braketOk = false;
 			$tabBraket = array();
-			if(ereg('\(', $currentWord)) {
+			if(preg_match('#\(#', $currentWord)) {
 				$braketStart = true;
 				$braketLevel++;
 				if($braketOk) {
@@ -445,7 +446,7 @@ class ParsingQuery {
 					$this->explodedQuery[$key] = $this->explodedQuery[$key].'<div style="margin-left: '.$indent.'em;">';
 				}
 			}
-			if(ereg('\)', $currentWord)) {
+			if(preg_match('#\)#', $currentWord)) {
 				$braketEnd = true;
 				if(is_array($tabBraket) && in_array($braketLevel, $tabBraket)){
 					$this->explodedQuery[$key] = '</div>'.$this->explodedQuery[$key];
@@ -454,7 +455,7 @@ class ParsingQuery {
 				$braketLevel--;
 			}
 			/*
-			if(ereg(',', $currentWord)){
+			if(preg_match('#,#', $currentWord)){
 				$this->explodedQuery[$key] = $this->explodedQuery[$key].'<br/>';
 			}
 			*/
@@ -524,7 +525,7 @@ class ParsingQuery {
 	*/
 	function colorizeWord($string, $word, $className){
 		$newWord = '<span class="'.$className.'">'.$word.'</span>';
-		return eregi_replace(preg_quote($word), $newWord, $string);
+		return preg_replace('#'.preg_quote($word).'#i', $newWord, $string);
 	}
 
 	/**
@@ -534,10 +535,11 @@ class ParsingQuery {
 	*/
 	function highlightQuery(){
 		$query = implode(' ', $this->explodedQuery);
-		$query = eregi_replace('#%£Q£%#', '<span class="syntaxe_string">'."''".'</span>', $query);
-		foreach($this->tabString as $key=>$value) $query = eregi_replace('#%£'.$key.'£%#', '<span class="syntaxe_string">'.htmlentities($value).'</span>', $query);
-
-		if(strpos($query, '<br/>') === 0) $query = substr($query, 5, strlen($query)-4);
+		$query = preg_replace('/%£Q£%/i', '<span class="syntaxe_string">'."''".'</span>', $query);
+		foreach($this->tabString as $key=>$value)
+		    $query = preg_replace('#%£'.$key.'£%#i', '<span class="syntaxe_string">'.htmlentities($value, ENT_NOQUOTES, $GLOBALS['charset']).'</span>', $query);
+		if(strpos($query, '<br/>') === 0)
+		    $query = substr($query, 5, strlen($query)-4);
 		return $query;
 	}
 
@@ -550,7 +552,7 @@ class ParsingQuery {
 		$tabElement = array();
 		$i = 0;
 		foreach($tabClause as $selectElem) {
-			if(eregi($selectElem, $query)){
+			if(preg_match("#$selectElem#i", $query)){
 				$tabElement[$i++] = $selectElem;
 			}
 		}
@@ -559,20 +561,5 @@ class ParsingQuery {
 		foreach($tabElement as $key=>$clause) if($key>=0) $out[$clause] = trim($tabResult[$key+1]);
 		return $out;
 	}
-}
-
-
-/**
-*  Add brackets when spaces in objects, remove existing ones for concatenations [table].[col] > [table.col]
-*
-* @param string $object object with or without bracket
-* @return string object with brackets
-*/
-function brackets($object,$type=''){
-	$object = ereg_replace('\[|\]','',$object);
-	if (strstr($object,' ')) {
-		$object = "[$object]";
-	}
-	return $object;
 }
 ?>
