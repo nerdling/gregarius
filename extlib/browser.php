@@ -228,16 +228,16 @@ class browser {
         elseif ((stripos($agent, "mozilla") !== false) && (stripos($agent, "rv:[0-9].[0-9][a-b]") !== false) && (stripos($agent, "netscape") === false)) {
             $bd['browser'] = "Mozilla";
             $val = explode(" ", stristr($agent, "rv:"));
-            preg_match("/rv:[0-9].[0-9][a-b]/", $agent, $val);
+            preg_match("/rv:[0-9].[0-9][a-b]/i", $agent, $val);
             $bd['version'] = str_replace("rv:", "", $val[0]);
             $this->isMoz = true;
 
             // test for Mozilla Stable Versions
         }
-        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]/", $agent) && (stripos($agent, "netscape") === false)) {
+        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]/i", $agent) && (stripos($agent, "netscape") === false)) {
             $bd['browser'] = "Mozilla";
             $val = explode(" ", stristr($agent, "rv:"));
-            preg_match("/rv:[0-9]\.[0-9]\.[0-9]/", $agent, $val);
+            preg_match("/rv:[0-9]\.[0-9]\.[0-9]/i", $agent, $val);
             $bd['version'] = str_replace("rv:", "", $val[0]);
             $this->isMoz = true;
 
@@ -275,7 +275,7 @@ class browser {
                 $this->isMoz = true;
             }
         }
-        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]\.[0-9]", $agent)) {
+        elseif ((stripos($agent, "mozilla") !== false) && preg_match("/rv:[0-9]\.[0-9]\.[0-9]/i", $agent)) {
             $val = explode(" ", stristr($agent, "mozilla"));
             $val = explode("/", $val[0]);
             $bd['browser'] = "Netscape";
