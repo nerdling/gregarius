@@ -662,7 +662,7 @@ function getPath($path='') {
     static $ret;
     if ($ret === NULL) {
         $ret = dirname($_SERVER['PHP_SELF']);
-        if (defined('RSS_FILE_LOCATION') && (stripos($ret, RSS_FILE_LOCATION."\$") !== false)) {
+        if (defined('RSS_FILE_LOCATION') && preg_match('#'.RSS_FILE_LOCATION."\$#", $ret)) {
             $ret = substr($ret, 0, strlen($ret) - strlen(RSS_FILE_LOCATION));
         }
         if (substr($ret, -1) == "\\") { // Take off trailing backslash
