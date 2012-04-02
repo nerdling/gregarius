@@ -66,7 +66,7 @@ class RSS {
         }
     }
 
-    function getTemplateFile($file) {
+    static function getTemplateFile($file) {
         static $cache;
 
         if (!$cache) {
