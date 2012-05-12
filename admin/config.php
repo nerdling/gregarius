@@ -116,7 +116,7 @@ function config_table_row($row, $class_, $adminDomain, $extraLinkText='') {
     case 'rss.config.tzoffset':
         echo $value
         . " (your local time: "
-        . preg_replace('/ /','&nbsp;',date("g:i A",mktime()+$value*3600))
+        . preg_replace('/ /','&nbsp;',date("g:i A",time()+$value*3600))
         .")";
         break;
     default:
