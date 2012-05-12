@@ -721,7 +721,9 @@ function getUrl($url, $maxlen = 0) {
         return $c;
     }
 
-    rss_require('extlib/Snoopy.class.inc');
+    if (!class_exists('Snoopy')) {
+        rss_require('extlib/Snoopy.class.inc');
+    }
     $client = new Snoopy();
     $client->agent = MAGPIE_USER_AGENT;
     $client->use_gzip = getConfig('rss.output.compression');
