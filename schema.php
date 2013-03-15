@@ -288,7 +288,7 @@ function _init_channels() {
 			mode int(16) NOT NULL default '1',
   			PRIMARY KEY  (id),
 			KEY url (url)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -315,7 +315,7 @@ function _init_dashboard() {
   			daterefreshed datetime default NULL,
   			itemcount tinyint(1) NOT NULL default 3,
   			PRIMARY KEY  (id)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
