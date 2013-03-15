@@ -308,10 +308,10 @@ function _init_dashboard() {
 	$sql_create = str_replace('__table__',$table, <<< _SQL_
 		CREATE TABLE __table__ (
 			id bigint(11) NOT NULL auto_increment,
-  			title text NOT NULL default '',
-  			url text NOT NULL default '',
+  			title text NOT NULL,
+  			url text NOT NULL,
   			position tinyint(1) NOT NULL default 0,
-  			obj text not NULL default '',
+  			obj text not NULL,
   			daterefreshed datetime default NULL,
   			itemcount tinyint(1) NOT NULL default 3,
   			PRIMARY KEY  (id)
