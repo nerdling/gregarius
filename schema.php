@@ -648,7 +648,7 @@ function _init_users() {
 		  ulevel bigint(11) NOT NULL default '1',		  
 		  realname varchar(255) default NULL,		  		  
 		  lastip varchar(255) default NULL,		  		  		  
-		  userips TEXT default '',		  
+		  userips TEXT,		  
 		  lastlogin datetime NULL default '0000-00-00 00:00:00',
 		  PRIMARY KEY  (uid),
 		  KEY (uname)
