@@ -27,8 +27,10 @@
 
 define('DBSTRUCT', dirname(__FILE__) . '/dbstruct.sql');
 
+require_once('constants.php');
 require_once('util.php');
 require_once('cls/l10n.php');
+
 /**
  * Checks the db schema for the for all required tables, adds those which are missing.
  * Returns the number of added tables;
