@@ -363,7 +363,7 @@ function _init_folders() {
 		  position int(11) NOT NULL default '0',    
 		  PRIMARY KEY  (id),
 		  UNIQUE KEY name (name)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -405,7 +405,7 @@ function _init_config() {
 			     desc_ text,
 			     export_ varchar(127) default NULL,
 			     PRIMARY KEY  (key_)
-			     ) ENGINE=MyISAM;
+			     ) ENGINE=MyISAM
 _SQL_
 );
 
@@ -512,7 +512,7 @@ function _init_item() {
 		  KEY guid(guid(10)),
 		  KEY cid (cid),
 		  KEY author (author)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -537,7 +537,7 @@ function _init_tag() {
 			PRIMARY KEY  (id),
 		 	UNIQUE KEY tag (tag),
 			KEY id (id)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -564,7 +564,7 @@ function _init_metatag() {
 			KEY fid (fid), 
 			KEY tid (tid),
 			KEY ttype (ttype)
-		) ENGINE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -586,7 +586,7 @@ function _init_rating() {
 		CREATE TABLE __table__ (
 			iid bigint(16)  NOT NULL,
   			rating tinyint(4) default '0'
-		) ENGINE=MyISAM;
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -612,7 +612,7 @@ function _init_cache() {
 		cachetype ENUM( 'ts', 'icon', 'feed' ) NOT NULL ,
 		data BLOB,
 		PRIMARY KEY ( cachekey )
-		) ENGINE=MYISAM;
+		) ENGINE=MYISAM
 _SQL_
 );
 
@@ -652,7 +652,7 @@ function _init_users() {
 		  lastlogin datetime NULL default '0000-00-00 00:00:00',
 		  PRIMARY KEY  (uid),
 		  KEY (uname)
-		) ENGINE=MyISAM;  
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -686,7 +686,7 @@ function _init_properties() {
 		  proptype enum('item','feed','folder','category','plugin','tag','theme','misc') NOT NULL default 'item',
 		  property varchar(128) NOT NULL default '',
 		  value text NOT NULL
-		) ENGINE=MyISAM;
+		) ENGINE=MyISAM
 		
 _SQL_
 );
