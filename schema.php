@@ -27,8 +27,10 @@
 
 define('DBSTRUCT', dirname(__FILE__) . '/dbstruct.sql');
 
+require_once('constants.php');
 require_once('util.php');
 require_once('cls/l10n.php');
+
 /**
  * Checks the db schema for the for all required tables, adds those which are missing.
  * Returns the number of added tables;
@@ -286,7 +288,7 @@ function _init_channels() {
 			mode int(16) NOT NULL default '1',
   			PRIMARY KEY  (id),
 			KEY url (url)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -306,14 +308,14 @@ function _init_dashboard() {
 	$sql_create = str_replace('__table__',$table, <<< _SQL_
 		CREATE TABLE __table__ (
 			id bigint(11) NOT NULL auto_increment,
-  			title text NOT NULL default '',
-  			url text NOT NULL default '',
+  			title text NOT NULL,
+  			url text NOT NULL,
   			position tinyint(1) NOT NULL default 0,
-  			obj text not NULL default '',
+  			obj text not NULL,
   			daterefreshed datetime default NULL,
   			itemcount tinyint(1) NOT NULL default 3,
   			PRIMARY KEY  (id)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -361,7 +363,7 @@ function _init_folders() {
 		  position int(11) NOT NULL default '0',    
 		  PRIMARY KEY  (id),
 		  UNIQUE KEY name (name)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -403,7 +405,7 @@ function _init_config() {
 			     desc_ text,
 			     export_ varchar(127) default NULL,
 			     PRIMARY KEY  (key_)
-			     ) TYPE=MyISAM;
+			     ) ENGINE=MyISAM
 _SQL_
 );
 
@@ -510,7 +512,7 @@ function _init_item() {
 		  KEY guid(guid(10)),
 		  KEY cid (cid),
 		  KEY author (author)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -535,7 +537,7 @@ function _init_tag() {
 			PRIMARY KEY  (id),
 		 	UNIQUE KEY tag (tag),
 			KEY id (id)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -562,7 +564,7 @@ function _init_metatag() {
 			KEY fid (fid), 
 			KEY tid (tid),
 			KEY ttype (ttype)
-		) TYPE=MyISAM;    
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -584,7 +586,7 @@ function _init_rating() {
 		CREATE TABLE __table__ (
 			iid bigint(16)  NOT NULL,
   			rating tinyint(4) default '0'
-		) TYPE=MyISAM;
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -610,7 +612,7 @@ function _init_cache() {
 		cachetype ENUM( 'ts', 'icon', 'feed' ) NOT NULL ,
 		data BLOB,
 		PRIMARY KEY ( cachekey )
-		) TYPE=MYISAM;
+		) ENGINE=MYISAM
 _SQL_
 );
 
@@ -646,11 +648,11 @@ function _init_users() {
 		  ulevel bigint(11) NOT NULL default '1',		  
 		  realname varchar(255) default NULL,		  		  
 		  lastip varchar(255) default NULL,		  		  		  
-		  userips TEXT default '',		  
+		  userips TEXT,		  
 		  lastlogin datetime NULL default '0000-00-00 00:00:00',
 		  PRIMARY KEY  (uid),
 		  KEY (uname)
-		) TYPE=MyISAM;  
+		) ENGINE=MyISAM
 _SQL_
 );
 
@@ -684,7 +686,7 @@ function _init_properties() {
 		  proptype enum('item','feed','folder','category','plugin','tag','theme','misc') NOT NULL default 'item',
 		  property varchar(128) NOT NULL default '',
 		  value text NOT NULL
-		) TYPE=MyISAM;
+		) ENGINE=MyISAM
 		
 _SQL_
 );
